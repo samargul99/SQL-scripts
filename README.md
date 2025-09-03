@@ -8,43 +8,31 @@ CREATE TABLE skus (
   sku_name      VARCHAR(120),
   category      VARCHAR(80)
 );
-
-
-
 CREATE TABLE sku_versions (
   sku_id        VARCHAR(20) REFERENCES skus(sku_id),
   version_no    INT,
   effective_date DATE,
   PRIMARY KEY (sku_id, version_no)
 );
-
-
-
 ## Ingredients
 CREATE TABLE ingredients (
   ingredient_id   VARCHAR(20) PRIMARY KEY,
   ingredient_name VARCHAR(120)
 );
-
-
-
 ## Many-to-many: SKU uses Ingredients
 CREATE TABLE sku_ingredients (
   sku_id          VARCHAR(20),
   ingredient_id   VARCHAR(20),
-  concentration_pct DECIMAL(6,2),    -- optional, for contribution visuals
+  concentration_pct DECIMAL(6,2), 
+  ## optional, for contribution visuals
   PRIMARY KEY (sku_id, ingredient_id)
 );
-
-
 
 ## Vendors & prices
 CREATE TABLE vendors (
   vendor_id    VARCHAR(20) PRIMARY KEY,
   vendor_name  VARCHAR(120)
 );
-
-
 
 CREATE TABLE vendor_prices (
   vendor_id      VARCHAR(20) REFERENCES vendors(vendor_id),
@@ -54,8 +42,6 @@ CREATE TABLE vendor_prices (
   PRIMARY KEY (vendor_id, ingredient_id, price_date)
 );
 
-
-
 ## BOM costs per SKU version (post-reformulation tracking)
 CREATE TABLE bom_costs (
   sku_id      VARCHAR(20),
@@ -63,9 +49,6 @@ CREATE TABLE bom_costs (
   bom_cost    DECIMAL(14,2),
   PRIMARY KEY (sku_id, version_no)
 );
-
-
-
 ## Optional: price trends for direct charting in Power BI
 CREATE TABLE price_trends (
   ingredient_name  VARCHAR(120),
