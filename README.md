@@ -28,7 +28,7 @@ It contains:
 All datasets are **synthetic** or dummy recreations for portfolio purposes.  
 No proprietary data is included.
 
--- Portfolio Schema for COGS & Vendor Analysis
+## Portfolio Schema for COGS & Vendor Analysis
 
 CREATE TABLE skus (
   sku_id        VARCHAR(20) PRIMARY KEY,
@@ -89,7 +89,7 @@ FROM base b
 JOIN skus s ON s.sku_id = b.sku_id
 ORDER BY savings_usd DESC;
 
--- Vendor Alpha vs Beta Comparison
+## Vendor Alpha vs Beta Comparison
 
 WITH latest AS (
   SELECT MAX(price_date) AS max_date FROM price_trends
@@ -108,16 +108,16 @@ JOIN latest l ON p.price_date = l.max_date
 GROUP BY ingredient_name
 ORDER BY savings_if_switch_pct DESC;
 
--- Helpful Views
+## Helpful Views
 
--- Latest BOM per SKU
+## Latest BOM per SKU
 CREATE OR REPLACE VIEW v_latest_bom AS
 SELECT DISTINCT ON (sku_id)
   sku_id, version_no, bom_cost
 FROM bom_costs
 ORDER BY sku_id, version_no DESC;
 
--- Version Comparison View
+## Version Comparison View
 CREATE OR REPLACE VIEW v_version_compare AS
 WITH first_ver AS (
   SELECT DISTINCT ON (sku_id) sku_id, version_no AS v1, bom_cost AS cost_v1
