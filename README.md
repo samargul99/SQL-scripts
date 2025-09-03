@@ -1,13 +1,15 @@
 # SQL-scripts
 schema + analysis queries
--- Minimal, portfolio-friendly schema for COGS & vendor analysis
+## Minimal, portfolio-friendly schema for COGS & vendor analysis
 
--- SKUs & versions
+## SKUs & versions
 CREATE TABLE skus (
   sku_id        VARCHAR(20) PRIMARY KEY,
   sku_name      VARCHAR(120),
   category      VARCHAR(80)
 );
+
+
 
 CREATE TABLE sku_versions (
   sku_id        VARCHAR(20) REFERENCES skus(sku_id),
@@ -16,13 +18,17 @@ CREATE TABLE sku_versions (
   PRIMARY KEY (sku_id, version_no)
 );
 
--- Ingredients
+
+
+## Ingredients
 CREATE TABLE ingredients (
   ingredient_id   VARCHAR(20) PRIMARY KEY,
   ingredient_name VARCHAR(120)
 );
 
--- Many-to-many: SKU uses Ingredients
+
+
+## Many-to-many: SKU uses Ingredients
 CREATE TABLE sku_ingredients (
   sku_id          VARCHAR(20),
   ingredient_id   VARCHAR(20),
@@ -30,11 +36,15 @@ CREATE TABLE sku_ingredients (
   PRIMARY KEY (sku_id, ingredient_id)
 );
 
--- Vendors & prices
+
+
+## Vendors & prices
 CREATE TABLE vendors (
   vendor_id    VARCHAR(20) PRIMARY KEY,
   vendor_name  VARCHAR(120)
 );
+
+
 
 CREATE TABLE vendor_prices (
   vendor_id      VARCHAR(20) REFERENCES vendors(vendor_id),
@@ -44,7 +54,9 @@ CREATE TABLE vendor_prices (
   PRIMARY KEY (vendor_id, ingredient_id, price_date)
 );
 
--- BOM costs per SKU version (post-reformulation tracking)
+
+
+## BOM costs per SKU version (post-reformulation tracking)
 CREATE TABLE bom_costs (
   sku_id      VARCHAR(20),
   version_no  INT,
@@ -52,18 +64,21 @@ CREATE TABLE bom_costs (
   PRIMARY KEY (sku_id, version_no)
 );
 
--- Optional: price trends for direct charting in Power BI
+
+
+## Optional: price trends for direct charting in Power BI
 CREATE TABLE price_trends (
   ingredient_name  VARCHAR(120),
   vendor_name      VARCHAR(120),
   price_date       DATE,
   price_per_uom    DECIMAL(12,2)
 );
-/* ================
-   COGS: Version compare & savings
-   ================= */
 
--- Latest two versions per SKU (v1, v2)
+================
+COGS: Version compare & savings
+=================
+
+## Latest two versions per SKU (v1, v2)
 WITH ranked AS (
   SELECT
     b.sku_id,
@@ -101,9 +116,9 @@ ORDER BY savings_usd DESC;
 -- (Assumes you’ve materialized ingredient costs per SKU-version)
 -- Example view join point: sku_ingredients × vendor_prices (chosen vendor) etc.
 
-/* ============================
-   Vendor comparison & switching
-   ============================ */
+============================
+Vendor comparison & switching
+============================ */
 
 -- Average price per vendor for an ingredient over a period
 SELECT
@@ -176,7 +191,7 @@ FROM skus s
 JOIN first_ver f ON f.sku_id = s.sku_id
 JOIN last_ver  l ON l.sku_id = s.sku_id;
 
--- 3) Monthly variance at portfolio level (for trend)
--- (Assuming a spend table with forecast/actual; otherwise map from your dataset)
--- SELECT month, SUM(actual - forecast) AS variance_amt FROM spend GROUP BY month;
+## Monthly variance at portfolio level (for trend)
+## (Assuming a spend table with forecast/actual; otherwise map from your dataset)
+## SELECT month, SUM(actual - forecast) AS variance_amt FROM spend GROUP BY month;
 
